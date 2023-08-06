@@ -1,0 +1,27 @@
+---
+name: Font image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    name: Update font image
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-dependencies
+      - name: Build font
+        run: python3 scripts/fontbuild.py -o /tmp/font.ttf
+      - name: Update font image
+        run: bash scripts/fontimagegen.sh /tmp/font.ttf fontimage.png
+      - name: Push the update to GitHub
+        run: |
+          git config user.email "49436968+Kyure-A@users.noreply.github.com"
+          git config user.name "Kyure_A (GitHub Actions)"
+          git add fontimage.png
+          if git commit -m "Update font image"; then
+            git push origin
+          else
+            echo No change on fontimage.png
+          fi
